@@ -68,16 +68,21 @@ function renderTasks() {
 										}</span>
                 </div>
             </div>
+						<button class="edit-btn ml-2 text-[11px] font-bold uppercase bg-blue-50 text-blue-500 px-3 py-1.5 rounded-lg hover:bg-blue-500 hover:text-white transition-all">Tahrirlash</button>
             <button class="ml-4 text-[11px] font-bold uppercase bg-red-50 text-red-500 px-3 py-1.5 rounded-lg hover:bg-red-500 hover:text-white transition-all">O'chirish</button>
         `
 		newLi.onclick = e => {
-			if (e.target.tagName !== 'BUTTON') toggleTask(realIndex)
+			const clickedText = e.target.innerText.toUpperCase()
+
+			if (clickedText === "O'CHIRISH") {
+				deleteTask(realIndex)
+			} else if (clickedText === 'TAHRIRLASH') {
+				editTask(realIndex)
+			} else {
+				toggleTask(realIndex)
+			}
 		}
 
-		newLi.querySelector('button').onclick = e => {
-			e.stopPropagation()
-			deleteTask(realIndex)
-		}
 		todoList.appendChild(newLi)
 	})
 }
@@ -86,17 +91,28 @@ function setFilter(f) {
 	renderTasks()
 }
 
+function editTask(index) {
+	const oldText = tasks[index].text
+
+	const newText = prompt('Vazifani tahrirlash:', oldText)
+
+	if (newText !== null && newText.trim() !== '') {
+		tasks[index].text = newText.trim()
+		saveAndRender()
+	}
+}
+
 function toggleTask(index) {
 	tasks[index].completed = !tasks[index].completed
-	saveAndRander()
+	saveAndRender()
 }
 
 function deleteTask(index) {
 	tasks.splice(index, 1)
-	saveAndRander()
+	saveAndRender()
 }
 
-function saveAndRander() {
+function saveAndRender() {
 	localStorage.setItem('tasks', JSON.stringify(tasks))
 	renderTasks()
 }
@@ -157,7 +173,7 @@ todoAdd.addEventListener('click', () => {
 		.padStart(2, '0')}`
 
 	tasks.push({ text: todoValue.value, completed: false, date: dateString })
-	saveAndRander()
+	saveAndRender()
 	todoValue.value = ''
 })
 
