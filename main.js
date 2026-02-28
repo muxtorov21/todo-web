@@ -11,6 +11,7 @@ const newDogBtn = document.getElementById('new-dog')
 const allBtn = document.getElementById('all')
 const completedBtn = document.getElementById('completed')
 const pendingBtn = document.getElementById('pending')
+const searchInput = document.getElementById('search-panel')
 let currentFilter = 'all'
 
 const savedAdvice = localStorage.getItem('lastAdvice')
@@ -41,10 +42,22 @@ function renderTasks() {
 	completedBtn.innerText = `Bajarildi ${completedCount}`
 	pendingBtn.innerHTML = `Kutilmoqda ${pendingCount}`
 
+	const searchText = searchInput.value.toLowerCase()
+
 	const filteredTasks = tasks.filter(task => {
 		if (currentFilter === 'completed') return task.completed
 		if (currentFilter === 'pending') return !task.completed
-		return true
+
+		const matchesFilter =
+			currentFilter === 'completed'
+				? task.completed
+				: currentFilter === 'pending'
+				? !task.completed
+				: true
+
+		const matchesSearch = task.text.toLowerCase().includes(searchText)
+
+		return matchesFilter && matchesSearch
 	})
 
 	filteredTasks.reverse().forEach(task => {
@@ -56,20 +69,23 @@ function renderTasks() {
 				: 'bg-white border-blue-100 shadow-sm hover:shadow-md'
 		}`
 		newLi.innerHTML = `
-            <div class="flex flex-col flex-1">
-                <span class="text-lg leading-tight ${
-									task.completed
-										? 'line-through text-gray-400'
-										: 'text-gray-700 font-medium'
-								}">${task.text}</span>
+            <div class="flex flex-col flex-1 min-w-0 ">
+										<span class="text-lg break-words overflow-hidden leading-tight ${
+											task.completed
+												? 'line-through text-gray-400'
+												: 'text-gray-700 font-medium'
+										}">${task.text}</span>
+
                 <div class="flex items-center gap-3 mt-1">
                     <span class="text-[11px] text-gray-400 font-medium">${
 											task.date || 'Hozir'
 										}</span>
                 </div>
             </div>
-						<button class="edit-btn ml-2 text-[11px] font-bold uppercase bg-blue-50 text-blue-500 px-3 py-1.5 rounded-lg hover:bg-blue-500 hover:text-white transition-all">Tahrirlash</button>
-            <button class="ml-4 text-[11px] font-bold uppercase bg-red-50 text-red-500 px-3 py-1.5 rounded-lg hover:bg-red-500 hover:text-white transition-all">O'chirish</button>
+						<div class="flex flex-col gap-1">
+						<button class="edit-btn ml-4 text-[11px] max-w-[90px] font-bold uppercase bg-blue-100 text-blue-500 px-3 py-1.5 rounded-lg hover:bg-blue-500 hover:text-white transition-all">Tahrirlash</button>
+            <button class="ml-4 text-[11px] max-w-[90px] w-full font-bold uppercase bg-red-100 text-red-500 px-3 py-1.5 rounded-lg hover:bg-red-500 hover:text-white transition-all">O'chirish</button>
+						</div>
         `
 		newLi.onclick = e => {
 			const clickedText = e.target.innerText.toUpperCase()
@@ -90,6 +106,10 @@ function setFilter(f) {
 	currentFilter = f
 	renderTasks()
 }
+
+searchInput.addEventListener('input', () => {
+	renderTasks()
+})
 
 function editTask(index) {
 	const oldText = tasks[index].text
