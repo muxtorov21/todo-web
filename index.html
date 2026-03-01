@@ -6,23 +6,41 @@
 	<meta name="viewport" content="width=device-width, initial-scale=1.0">
 	<title>Persistent State</title>
 	<script src="https://cdn.tailwindcss.com"></script>
+	<script>
+		tailwind.config = {
+			darkMode: 'class'
+		}
+	</script>
 </head>
 
-<body class="bg-gray-100 min-h-screen p-4 sm:p-8">
+<body class="bg-gray-100 dark:bg-slate-950 min-h-screen p-4 sm:p-8 transition-colors duration-500">>
 
-	<div class="bg-white w-full max-w-md mx-auto p-6 rounded-2xl shadow-xl">
+
+	<div
+		class="bg-white dark:bg-slate-900 w-full max-w-md mx-auto p-6 rounded-2xl shadow-xl transition-colors duration-500">
+		<div class="flex items-center justify-between mb-6">
+			<h1 class="text-3xl font-bold text-gray-800 dark:text-white">Daily tasks</h1>
+			<button id="theme-toggle" class="rounded-lg hover:bg-gray-100 dark:hover:bg-white-700 transition-all">
+				<img src="/images/Adobe Express - file.png" alt="dark-mode" id="theme-toggle-dark-icon" class="w-7 hidden">
+				<img src="/images/Adobe Express - file (1).png" alt="light-mode" id="theme-toggle-light-icon"
+					class="w-8 hidden bg-white rounded-full">
+			</button>
+		</div>
+
 		<div class="flex gap-2">
-			<p id="advice-text"></p>
+			<p id="advice-text" class="dark:text-gray-300"></p>
 		</div>
 		<button id="new-advice"
-			class="bg-green-600 my-5 hover:bg-pink-700 text-white font-bold py-3 px-6 rounded-2xl transition-all active:scale-95">
+			class="bg-green-600 my-5 hover:bg-pink-700 text-white font-bold py-2 px-3 rounded-xl transition-all active:scale-95">
 			New advice
 		</button>
-		<h1 class="text-2xl font-bold text-gray-800 mb-6 text-center">Vazifalar</h1>
+
+
+		<h2 class="text-2xl font-bold text-gray-800 dark:text-white mb-6 text-center">Vazifalar</h2>
 
 		<div>
 			<input type="text" id="todo-value"
-				class="flex-1  border border-gray-300 p-3 max-sm:w-[200px] rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 text-lg"
+				class="flex-1  border border-gray-300 p-3 max-sm:w-[200px] rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 text-lg dark:border-gray-700 dark:bg-slate-800 dark:text-white"
 				placeholder="Yangi vazifa...">
 			<button id="todo-add"
 				class="bg-blue-600 my-5  hover:bg-gray-700 text-white font-bold py-3 px-6 max-sm:py-3 max-sm:px-3   rounded-2xl transition-all active:scale-95">
@@ -40,24 +58,11 @@
 
 		<div>
 			<input type="search" placeholder="Qidirish..." id="search-panel"
-				class="w-full mb-5 border border-gray-300 p-3 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 text-lg">
+				class="w-full mb-5 border border-gray-300 p-3 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 text-lg dark:border-gray-700 dark:bg-slate-800 dark:text-white">
 		</div>
 
 		<ul id="todo-list" class="space-y-3"></ul>
 
-		<div>
-			<img src="" alt="" class="w-full mx-auto my-5 max-w-[300px]" id="dog-img">
-			<button id="new-dog"
-				class="bg-yellow-600 my-5 hover:bg-red-700 text-white font-bold py-3 px-6 rounded-2xl transition-all active:scale-95">
-				New dog
-			</button>
-
-			<div>
-				<h3 id="owner"></h3>
-				<img src="" alt="" id="owner-img">
-				<p id="owner-name" class="text-lg"></p>
-			</div>
-		</div>
 	</div>
 
 	<script src="main.js"></script>
