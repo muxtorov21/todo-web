@@ -73,7 +73,7 @@ function renderTasks() {
 	filteredTasks.reverse().forEach(task => {
 		const realIndex = tasks.indexOf(task)
 		let newLi = document.createElement('li')
-		newLi.className = `flex items-center justify-between p-4 mb-2 rounded-xl border transition-all cursor-pointer ${
+		newLi.className = `task-animate flex items-center justify-between p-4 mb-2 rounded-xl border transition-all cursor-pointer ${
 			task.completed
 				? 'bg-green-50 border-green-200 dark:bg-green-900/20 dark:border-green-800'
 				: 'bg-white border-blue-100 shadow-sm hover:shadow-md dark:bg-slate-800 dark:border-slate-700'
@@ -92,16 +92,26 @@ function renderTasks() {
                 </div>
             </div>
             <div class="flex flex-col gap-1">
-                <button class="edit-btn ml-4 text-[11px] max-w-[90px] font-bold uppercase bg-blue-100 text-blue-500 px-3 py-1.5 rounded-lg hover:bg-blue-500 hover:text-white transition-all">Tahrirlash</button>
-                <button class="delete-btn ml-4 text-[11px] max-w-[90px] w-full font-bold uppercase bg-red-100 text-red-500 px-3 py-1.5 rounded-lg hover:bg-red-500 hover:text-white transition-all">O'chirish</button>
+                <button class="edit-btn ml-4 active:scale-95 transition-transform text-[11px] max-w-[90px] font-bold uppercase bg-blue-100 text-blue-500 px-3 py-1.5 rounded-lg hover:bg-blue-500 hover:text-white transition-all">Tahrirlash</button>
+                <button class="delete-btn ml-4 text-[11px] max-w-[90px] w-full font-bold uppercase bg-red-100 text-red-500 px-3 py-1.5 rounded-lg hover:bg-red-500 active:scale-95 transition-transform hover:text-white transition-all">O'chirish</button>
             </div>
         `
 		newLi.onclick = e => {
 			const clickedText = e.target.innerText.toUpperCase()
-			if (clickedText === "O'CHIRISH") deleteTask(realIndex)
-			else if (clickedText === 'TAHRIRLASH') editTask(realIndex)
-			else toggleTask(realIndex)
+
+			if (clickedText === "O'CHIRISH") {
+				newLi.classList.add('task-exit')
+
+				setTimeout(() => {
+					deleteTask(realIndex)
+				}, 400)
+			} else if (clickedText === 'TAHRIRLASH') {
+				editTask(realIndex)
+			} else {
+				toggleTask(realIndex)
+			}
 		}
+
 		todoList.appendChild(newLi)
 	})
 }

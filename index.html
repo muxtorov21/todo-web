@@ -11,6 +11,34 @@
 			darkMode: 'class'
 		}
 	</script>
+	<style>
+		@keyframes slideIn {
+			from {
+				opacity: 0;
+				transform: translateY(-20px);
+			}
+
+			to {
+				opacity: 1;
+				transform: translateY(0);
+			}
+		}
+
+		.task-animate {
+			animation: slideIn 0.4s ease-out;
+		}
+
+		@keyframes slideOut {
+			to {
+				opacity: 0;
+				transform: translateX(-100%);
+			}
+		}
+
+		.task-exit {
+			animation: slideOut 0.4s ease-in forwards;
+		}
+	</style>
 </head>
 
 <body class="bg-gray-100 dark:bg-slate-950 min-h-screen p-4 sm:p-8 transition-colors duration-500">>
@@ -20,7 +48,7 @@
 		class="bg-white dark:bg-slate-900 w-full max-w-md mx-auto p-6 rounded-2xl shadow-xl transition-colors duration-500">
 		<div class="flex items-center justify-between mb-6">
 			<h1 class="text-3xl font-bold text-gray-800 dark:text-white">Daily tasks</h1>
-			<button id="theme-toggle" class="rounded-lg hover:bg-gray-100 dark:hover:bg-white-700 transition-all">
+			<button id="theme-toggle" class="rounded-lg  transition-all active:scale-95 transition-transform">
 				<img src="/images/Adobe Express - file.png" alt="dark-mode" id="theme-toggle-dark-icon" class="w-7 hidden">
 				<img src="/images/Adobe Express - file (1).png" alt="light-mode" id="theme-toggle-light-icon"
 					class="w-8 hidden bg-white rounded-full">
@@ -31,7 +59,7 @@
 			<p id="advice-text" class="dark:text-gray-300"></p>
 		</div>
 		<button id="new-advice"
-			class="bg-green-600 my-5 hover:bg-pink-700 text-white font-bold py-2 px-3 rounded-xl transition-all active:scale-95">
+			class="bg-green-600 my-5 active:scale-95 transition-transform hover:bg-pink-700 text-white font-bold py-2 px-3 rounded-xl transition-all ">
 			New advice
 		</button>
 
@@ -40,25 +68,25 @@
 
 		<div>
 			<input type="text" id="todo-value"
-				class="flex-1  border border-gray-300 p-3 max-sm:w-[200px] rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 text-lg dark:border-gray-700 dark:bg-slate-800 dark:text-white"
+				class="flex-1 focus:ring-4 focus:ring-blue-500/20 focus:border-blue-500  border border-gray-300 p-3 max-sm:w-[200px] rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 text-lg dark:border-gray-700 dark:bg-slate-800 dark:text-white"
 				placeholder="Yangi vazifa...">
 			<button id="todo-add"
-				class="bg-blue-600 my-5  hover:bg-gray-700 text-white font-bold py-3 px-6 max-sm:py-3 max-sm:px-3   rounded-2xl transition-all active:scale-95">
+				class="bg-blue-600 my-5 active:scale-95 transition-transform hover:bg-gray-700 text-white font-bold py-3 px-6 max-sm:py-3 max-sm:px-3   rounded-2xl transition-all active:scale-95">
 				Qo'shish
 			</button>
 		</div>
 		<div class="flex justify-center gap-2 mb-4">
 			<button onclick="setFilter('all')" id="all"
-				class="text-xs bg-blue-200 px-3 py-1 rounded-full active:scale-95 transition-all">Hammasi</button>
+				class="text-xs bg-blue-200 active:scale-95 transition-transform px-3 py-1 rounded-full active:scale-95 transition-all">Hammasi</button>
 			<button onclick="setFilter('completed')" id="completed"
-				class="text-xs bg-green-100 text-green-700 px-3 py-1 rounded-full active:scale-95 transition-all">Bajarilgan</button>
+				class="text-xs bg-green-100 active:scale-95 transition-transform text-green-700 px-3 py-1 rounded-full active:scale-95 transition-all">Bajarilgan</button>
 			<button onclick="setFilter('pending')" id="pending"
-				class="text-xs bg-yellow-100 text-yellow-700 px-3 py-1 rounded-full active:scale-95 transition-all">Kutilmoqda</button>
+				class="text-xs bg-yellow-100 active:scale-95 transition-transform text-yellow-700 px-3 py-1 rounded-full active:scale-95 transition-all">Kutilmoqda</button>
 		</div>
 
 		<div>
 			<input type="search" placeholder="Qidirish..." id="search-panel"
-				class="w-full mb-5 border border-gray-300 p-3 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 text-lg dark:border-gray-700 dark:bg-slate-800 dark:text-white">
+				class="w-full mb-5 border border-gray-300 p-3 focus:ring-blue-500/20 focus:border-blue-500  rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 text-lg dark:border-gray-700 dark:bg-slate-800 dark:text-white">
 		</div>
 
 		<ul id="todo-list" class="space-y-3"></ul>
