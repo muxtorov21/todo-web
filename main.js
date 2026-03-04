@@ -21,6 +21,7 @@ deleteSound.volume = 0.2
 //  (STATE)
 let currentFilter = 'all'
 let tasks = JSON.parse(localStorage.getItem('tasks')) || []
+let draggedItemIndex = null
 //  THEME
 function initTheme() {
 	const isDark =
@@ -61,6 +62,7 @@ function saveAndRender() {
 function createTaskElement(task) {
 	const realIndex = tasks.indexOf(task)
 	const newLi = document.createElement('li')
+	newLi.draggable = true
 	newLi.className = `task-animate flex items-center justify-between p-4 mb-2 rounded-xl border transition-all cursor-pointer ${
 		task.completed
 			? 'bg-green-50 border-green-200 dark:bg-green-900/20 dark:border-green-800'
@@ -84,6 +86,24 @@ function createTaskElement(task) {
             <button class="delete-btn ml-4 text-[11px] max-w-[90px] w-full font-bold uppercase bg-red-100 text-red-500 px-3 py-1.5 rounded-lg hover:bg-red-500 active:scale-95 transition-transform hover:text-white transition-all">O'chirish</button>
         </div>
     `
+
+	newLi.ondragstart = () => {
+		draggedItemIndex = tasks.indexOf(task)
+		newLi.classList.add('scale-105 color-red-100')
+	}
+	newLi.ondragover = e => {
+		e.preventDefault()
+		newLi.classList.add('border-t-4', 'border-blue-500')
+	}
+
+	newLi.ondragleave = () => {
+		newLi.classList.remove('border-t-4', 'border-blue-500')
+	}
+	newLi.ondrop = () => {
+		newLi.classList.remove('border-t-4', 'border-blue-500')
+		const droppedItemIndex = tasks.indexOf(task)
+		swapTasks(draggedItemIndex, droppedItemIndex)
+	}
 	// Click
 	newLi.onclick = e => {
 		const clickedText = e.target.innerText.toUpperCase()
@@ -150,6 +170,13 @@ function editTask(index) {
 function setFilter(f) {
 	currentFilter = f
 	renderTasks()
+}
+
+function swapTasks(fromIndex, toIndex) {
+	if (fromIndex === toIndex) return
+	const movedTask = tasks.splice(fromIndex, 1)[0]
+	tasks.splice(toIndex, 0, movedTask)
+	saveAndRender()
 }
 //  API VA HODISALAR
 function getAdvice() {
