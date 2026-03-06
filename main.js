@@ -58,8 +58,27 @@ function saveAndRender() {
 	localStorage.setItem('tasks', JSON.stringify(tasks))
 	renderTasks()
 }
+
+function showToast(message, type = 'success') {
+	const container = document.getElementById('toast-container')
+	const toast = document.createElement('div')
+	let bgColor = 'bg-green-500'
+	if (type === 'error') bgColor = 'bg-red-500'
+	if (type === 'info') bgColor = 'bg-blue-500'
+
+	toast.className = `${bgColor} text-white px-6 py-3 max-sm:py-1 max-sm:px-4 rounded-lg shadow-lg transform transition-all duration-300 translate-y-10 opacity-0 flex items-center gap-2 font-medium`
+	toast.innerHTML = `<span>${message}</span>`
+	container.appendChild(toast)
+	setTimeout(() => {
+		toast.classList.remove('translate-y-10', 'opacity-0')
+	}, 100)
+	setTimeout(() => {
+		toast.classList.add('opacity-0', 'scale-90')
+		setTimeout(() => toast.remove(), 300)
+	}, 3000)
+}
 // Create element
-function createTaskElement(task) {
+function createTaskElement(task, highlightedText) {
 	const realIndex = tasks.indexOf(task)
 	const newLi = document.createElement('li')
 	newLi.draggable = true
@@ -69,18 +88,18 @@ function createTaskElement(task) {
 			: 'bg-white border-blue-100 shadow-sm hover:shadow-md dark:bg-slate-800 dark:border-slate-700'
 	}`
 	newLi.innerHTML = `
-        <div class="flex flex-col flex-1 min-w-0 ">
-            <span class="text-lg break-words overflow-hidden leading-tight ${
-							task.completed
-								? 'line-through text-gray-400 dark:text-gray-500'
-								: 'text-gray-700 font-medium dark:text-gray-200'
-						}">${task.text}</span>
-            <div class="flex items-center gap-3 mt-1">
-                <span class="text-[11px] text-gray-400 font-medium">${
-									task.date || 'Hozir'
-								}</span>
-            </div>
-        </div>
+		    <div class="flex flex-col flex-1 min-w-0 ">
+								<span class="text-lg break-words overflow-hidden leading-tight ${
+									task.completed
+										? 'line-through text-gray-400 dark:text-gray-500'
+										: 'text-gray-700 font-medium dark:text-gray-200'
+								}">${highlightedText || task.text}</span> 
+								<div class="flex items-center gap-3 mt-1">
+										<span class="text-[11px] text-gray-400 font-medium">${
+											task.date || 'Hozir'
+										}</span>
+								</div>
+					</div>
         <div class="flex flex-col gap-1">
             <button class="edit-btn ml-4 active:scale-95 transition-transform text-[11px] max-w-[90px] font-bold uppercase bg-blue-100 text-blue-500 px-3 py-1.5 rounded-lg hover:bg-blue-500 hover:text-white transition-all">Tahrirlash</button>
             <button class="delete-btn ml-4 text-[11px] max-w-[90px] w-full font-bold uppercase bg-red-100 text-red-500 px-3 py-1.5 rounded-lg hover:bg-red-500 active:scale-95 transition-transform hover:text-white transition-all">O'chirish</button>
@@ -110,6 +129,7 @@ function createTaskElement(task) {
 		if (clickedText === "O'CHIRISH") {
 			newLi.classList.add('task-exit')
 			deleteSound.play()
+			showToast("Vazifa o'chirildi!", 'error')
 			setTimeout(() => {
 				newLi.remove()
 				const index = tasks.indexOf(task)
@@ -131,8 +151,9 @@ function createTaskElement(task) {
 function renderTasks() {
 	todoList.innerHTML = ''
 	updateStats()
+	const searchText = searchInput.value.trim()
+	const searchLower = searchInput.value.toLowerCase()
 
-	const searchText = searchInput.value.toLowerCase()
 	const filteredTasks = tasks.filter(task => {
 		const matchesFilter =
 			currentFilter === 'completed'
@@ -140,12 +161,21 @@ function renderTasks() {
 				: currentFilter === 'pending'
 				? !task.completed
 				: true
-		const matchesSearch = task.text.toLowerCase().includes(searchText)
+		const matchesSearch = task.text.toLowerCase().includes(searchLower)
 		return matchesFilter && matchesSearch
 	})
 
 	filteredTasks.reverse().forEach(task => {
-		todoList.appendChild(createTaskElement(task))
+		let displayText = task.text
+		if (searchText !== '') {
+			const regex = new RegExp(`(${searchText})`, 'gi')
+			displayText = task.text.replace(
+				regex,
+				'<mark class="bg-yellow-300 dark:bg-yellow-600 rounded-sm px-0.5">$1</mark>'
+			)
+		}
+
+		todoList.appendChild(createTaskElement(task, displayText))
 	})
 }
 // (ACTIONS)
@@ -165,6 +195,7 @@ function editTask(index) {
 		tasks[index].text = newText.trim()
 		saveAndRender()
 	}
+	showToast("O'zgarish saqlandi!", 'info')
 }
 
 function setFilter(f) {
@@ -188,6 +219,7 @@ function getAdvice() {
 			adviceText.innerText = data.slip.advice
 			localStorage.setItem('lastAdvice', data.slip.advice)
 		})
+	showToast('Yangi maslahat! ', 'info')
 }
 
 window.addEventListener(
@@ -223,6 +255,7 @@ todoAdd.addEventListener('click', async () => {
 
 	localStorage.setItem('tasks', JSON.stringify(tasks))
 	updateStats()
+	showToast("Vazifa qo'shildi!")
 	todoValue.value = ''
 })
 // INIT
