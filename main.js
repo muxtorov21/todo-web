@@ -54,9 +54,11 @@ function updateStats() {
 	pendingBtn.innerHTML = `Kutilmoqda ${pendingCount}`
 }
 
-function saveAndRender() {
-	localStorage.setItem('tasks', JSON.stringify(tasks))
-	renderTasks()
+// Bu funksiya ilovangning "Yuragi". Nima o'zgarsa ham, shuni chaqiramiz.
+function syncTasks() {
+	localStorage.setItem('tasks', JSON.stringify(tasks)) // 1. Saqlaydi
+	updateStats() // 2. Hisoblaydi
+	renderTasks() // 3. Chizadi
 }
 
 function showToast(message, type = 'success') {
@@ -135,8 +137,7 @@ function createTaskElement(task, highlightedText) {
 				const index = tasks.indexOf(task)
 				if (index > -1) {
 					tasks.splice(index, 1)
-					localStorage.setItem('tasks', JSON.stringify(tasks))
-					updateStats()
+					syncTasks()
 				}
 			}, 400)
 		} else if (clickedText === 'TAHRIRLASH') {
@@ -181,19 +182,19 @@ function renderTasks() {
 // (ACTIONS)
 function deleteTask(index) {
 	tasks.splice(index, 1)
-	saveAndRender()
+	syncTasks()
 }
 
 function toggleTask(index) {
 	tasks[index].completed = !tasks[index].completed
-	saveAndRender()
+	syncTasks()
 }
 
 function editTask(index) {
 	const newText = prompt('Vazifani tahrirlash:', tasks[index].text)
 	if (newText && newText.trim()) {
 		tasks[index].text = newText.trim()
-		saveAndRender()
+		syncTasks()
 	}
 	showToast("O'zgarish saqlandi!", 'info')
 }
@@ -207,7 +208,7 @@ function swapTasks(fromIndex, toIndex) {
 	if (fromIndex === toIndex) return
 	const movedTask = tasks.splice(fromIndex, 1)[0]
 	tasks.splice(toIndex, 0, movedTask)
-	saveAndRender()
+	syncTasks()
 }
 //  API VA HODISALAR
 function getAdvice() {
@@ -253,8 +254,7 @@ todoAdd.addEventListener('click', async () => {
 	const newLi = createTaskElement(newTask)
 	todoList.prepend(newLi)
 
-	localStorage.setItem('tasks', JSON.stringify(tasks))
-	updateStats()
+	syncTasks()
 	showToast("Vazifa qo'shildi!")
 	todoValue.value = ''
 })
