@@ -4,7 +4,7 @@
 <head>
 	<meta charset="UTF-8">
 	<meta name="viewport" content="width=device-width, initial-scale=1.0">
-	<title>Persistent State</title>
+	<title>My todo app</title>
 	<script src="https://cdn.tailwindcss.com"></script>
 	<script>
 		tailwind.config = {
@@ -76,6 +76,14 @@
 				Qo'shish
 			</button>
 		</div>
+		<div class="flex items-center gap-1 mb-5">
+			<button id="clear-completed" class="text-[18px] text-red-500 hover:underline font-medium">Bajarilganlarni
+				tozalash
+			</button>
+			<svg id="close-icon" class="w-5 h-5 text-red-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+				<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+			</svg>
+		</div>
 		<div class="flex justify-center gap-2 mb-4">
 			<button onclick="setFilter('all')" id="all"
 				class="text-xs bg-blue-200 active:scale-95 transition-transform px-3 py-1 rounded-full active:scale-95 transition-all">Hammasi</button>
@@ -83,6 +91,12 @@
 				class="text-xs bg-green-100 active:scale-95 transition-transform text-green-700 px-3 py-1 rounded-full active:scale-95 transition-all">Bajarilgan</button>
 			<button onclick="setFilter('pending')" id="pending"
 				class="text-xs bg-yellow-100 active:scale-95 transition-transform text-yellow-700 px-3 py-1 rounded-full active:scale-95 transition-all">Kutilmoqda</button>
+			<select id="sort-tasks"
+				class="bg-gray-50 w-[114px] border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block p-1.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white">
+				<option value="newest">Yangi qo'shilganlar</option>
+				<option value="alphabet">Alifbo bo'yicha </option>
+				<option value="completed-first">Bajarilganlar oldinda</option>
+			</select>
 		</div>
 
 		<div>

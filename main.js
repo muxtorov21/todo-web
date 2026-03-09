@@ -10,6 +10,7 @@ const searchInput = document.getElementById('search-panel')
 const themeToggleBtn = document.getElementById('theme-toggle')
 const darkIcon = document.getElementById('theme-toggle-dark-icon')
 const lightIcon = document.getElementById('theme-toggle-light-icon')
+const sortSelect = document.getElementById('sort-tasks')
 const addSound = new Audio('sounds/freesound_crunchpixstudio-add-408457.mp3')
 const deleteSound = new Audio(
 	'sounds/spinopel-remove-charging-cable-into-smartphone-393112.mp3'
@@ -152,30 +153,34 @@ function createTaskElement(task, highlightedText) {
 function renderTasks() {
 	todoList.innerHTML = ''
 	updateStats()
-	const searchText = searchInput.value.trim()
-	const searchLower = searchInput.value.toLowerCase()
-
-	const filteredTasks = tasks.filter(task => {
+	const searchText = searchInput.value.trim().toLowerCase()
+	let filtered = tasks.filter(task => {
 		const matchesFilter =
-			currentFilter === 'completed'
-				? task.completed
-				: currentFilter === 'pending'
-				? !task.completed
-				: true
-		const matchesSearch = task.text.toLowerCase().includes(searchLower)
+			currentFilter === 'all' ||
+			(currentFilter === 'completed' ? task.completed : !task.completed)
+		const matchesSearch = task.text.toLowerCase().includes(searchText)
 		return matchesFilter && matchesSearch
 	})
+	const sortValue = document.getElementById('sort-tasks').value
+	if (sortValue === 'alphabet') {
+		filtered.sort((a, b) => a.text.localeCompare(b.text))
+	} else if (sortValue === 'completed-first') {
+		filtered.sort((a, b) =>
+			a.completed === b.completed ? 0 : a.completed ? -1 : 1
+		)
+	} else {
+		filtered.reverse()
+	}
 
-	filteredTasks.reverse().forEach(task => {
+	filtered.forEach(task => {
 		let displayText = task.text
 		if (searchText !== '') {
 			const regex = new RegExp(`(${searchText})`, 'gi')
 			displayText = task.text.replace(
 				regex,
-				'<mark class="bg-yellow-300 dark:bg-yellow-600 rounded-sm px-0.5">$1</mark>'
+				'<mark class="bg-yellow-300">$1</mark>'
 			)
 		}
-
 		todoList.appendChild(createTaskElement(task, displayText))
 	})
 }
@@ -275,3 +280,22 @@ if (!savedAdvice) {
 		adviceTextSpan.innerText = savedAdvice
 	}
 }
+
+const clearBtn = document.getElementById('clear-completed')
+
+clearBtn.onclick = () => {
+	const hasCompleted = tasks.some(t => t.completed)
+
+	if (hasCompleted) {
+		if (confirm("Barcha bajarilgan vazifalarni o'chirmoqchimisiz?")) {
+			tasks = tasks.filter(t => !t.completed)
+			syncTasks()
+			showToast('Bajarilgan vazifalar tozalandi!', 'info')
+		}
+	} else {
+		showToast("Hali bajarilgan vazifalar yo'q!", 'info')
+	}
+}
+
+// Saralash turi o'zgarganda darhol renderTasks-ni chaqiramiz
+sortSelect.addEventListener('change', renderTasks)
