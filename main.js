@@ -55,11 +55,10 @@ function updateStats() {
 	pendingBtn.innerHTML = `Kutilmoqda ${pendingCount}`
 }
 
-// Bu funksiya ilovangning "Yuragi". Nima o'zgarsa ham, shuni chaqiramiz.
 function syncTasks() {
-	localStorage.setItem('tasks', JSON.stringify(tasks)) // 1. Saqlaydi
-	updateStats() // 2. Hisoblaydi
-	renderTasks() // 3. Chizadi
+	localStorage.setItem('tasks', JSON.stringify(tasks))
+	updateStats()
+	renderTasks()
 }
 
 function showToast(message, type = 'success') {
@@ -161,7 +160,16 @@ function renderTasks() {
 		const matchesSearch = task.text.toLowerCase().includes(searchText)
 		return matchesFilter && matchesSearch
 	})
-	const sortValue = document.getElementById('sort-tasks').value
+	if (filtered.length === 0) {
+		todoList.innerHTML = `
+        <div class="text-center py-10 opacity-50">
+				<p class="text-3xl">Yangi vazifa qo'shing</p>
+            <p class="mt-2 text-gray-500 dark:text-gray-400">Vazifalar topilmadi...</p>
+        </div>
+    `
+		return
+	}
+	const sortValue = sortSelect.value
 	if (sortValue === 'alphabet') {
 		filtered.sort((a, b) => a.text.localeCompare(b.text))
 	} else if (sortValue === 'completed-first') {
@@ -171,14 +179,13 @@ function renderTasks() {
 	} else {
 		filtered.reverse()
 	}
-
 	filtered.forEach(task => {
 		let displayText = task.text
 		if (searchText !== '') {
 			const regex = new RegExp(`(${searchText})`, 'gi')
 			displayText = task.text.replace(
 				regex,
-				'<mark class="bg-yellow-300">$1</mark>'
+				'<mark class="bg-yellow-300 dark:bg-yellow-600 rounded-sm px-0.5">$1</mark>'
 			)
 		}
 		todoList.appendChild(createTaskElement(task, displayText))
@@ -216,16 +223,28 @@ function swapTasks(fromIndex, toIndex) {
 	syncTasks()
 }
 //  API VA HODISALAR
-function getAdvice() {
+async function getAdvice() {
 	const adviceText = document.getElementById('advice-text')
-	advice.innerText = 'yuklanmoqda...'
-	fetch('https://api.adviceslip.com/advice')
-		.then(res => res.json())
-		.then(data => {
-			adviceText.innerText = data.slip.advice
-			localStorage.setItem('lastAdvice', data.slip.advice)
-		})
-	showToast('Yangi maslahat! ', 'info')
+	const adviceBtn = document.getElementById('new-advice')
+	adviceBtn.disabled = true
+	const originalBtnText = adviceBtn.innerText
+	adviceBtn.innerText = 'Loading...'
+	adviceText.innerText = 'Dona-dona maslahatlar tayyorlanmoqda...'
+	try {
+		const response = await fetch('https://api.adviceslip.com/advice')
+		if (!response.ok) throw new Error('Serverda xatolik!')
+		const data = await response.json()
+		adviceText.innerText = data.slip.advice
+		localStorage.setItem('lastAdvice', data.slip.advice)
+		showToast('Yangi maslahat!', 'info')
+	} catch (error) {
+		console.error('Xatolik yuz berdi:', error)
+		showToast('Internetni tekshiring! ', 'error')
+		adviceText.innerText = 'Maslahatni yuklab bo‘lmadi!'
+	} finally {
+		adviceBtn.disabled = false
+		adviceBtn.innerText = originalBtnText
+	}
 }
 
 window.addEventListener(
@@ -254,7 +273,7 @@ todoAdd.addEventListener('click', async () => {
 		addSound.currentTime = 0
 		await addSound.play()
 	} catch (err) {
-		console.log('Ovoz chalishda xato:', err)
+		console.warn("Ovozni chalishning imkoni bo'lmadi")
 	}
 	const newLi = createTaskElement(newTask)
 	todoList.prepend(newLi)
@@ -297,5 +316,8 @@ clearBtn.onclick = () => {
 	}
 }
 
-// Saralash turi o'zgarganda darhol renderTasks-ni chaqiramiz
 sortSelect.addEventListener('change', renderTasks)
+
+todoValue.addEventListener('keypress', e => {
+	if (e.key === 'Enter') todoAdd.click()
+})
