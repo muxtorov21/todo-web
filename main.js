@@ -86,7 +86,7 @@ function createTaskElement(task, highlightedText) {
 	newLi.draggable = true
 	newLi.className = `task-animate flex items-center justify-between p-4 mb-2 rounded-xl border transition-all cursor-pointer ${
 		task.completed
-			? 'bg-green-50 border-green-200 dark:bg-green-900/20 dark:border-green-800'
+			? 'bg-green-50 border-green-500 dark:bg-green-900/50 dark:border-green-800'
 			: 'bg-white border-blue-100 shadow-sm hover:shadow-md dark:bg-slate-800 dark:border-slate-700'
 	}`
 	newLi.innerHTML = `
